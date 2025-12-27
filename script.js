@@ -283,10 +283,15 @@ class BuchstabensalatGame {
                 gap.classList.remove('drag-over');
             });
 
-            if (elementBelow && elementBelow.classList.contains('letter-gap')) {
-                const toPosition = parseInt(elementBelow.dataset.position);
-
-                if (touchStartIndex !== null) {
+            if (touchStartIndex !== null) {
+                if (elementBelow && elementBelow.classList.contains('letter-gap')) {
+                    // Dropped on gap - use gap position
+                    const toPosition = parseInt(elementBelow.dataset.position);
+                    this.insertLetter(touchStartIndex, toPosition);
+                } else if (elementBelow && elementBelow.classList.contains('letter-square')) {
+                    // Dropped on letter - insert after that letter
+                    const targetIndex = parseInt(elementBelow.dataset.index);
+                    const toPosition = targetIndex + 1;
                     this.insertLetter(touchStartIndex, toPosition);
                 }
             }
@@ -331,6 +336,22 @@ class BuchstabensalatGame {
             document.querySelectorAll('.letter-gap').forEach(gap => {
                 gap.classList.remove('drag-over');
             });
+        });
+
+        // Allow drop on letters as fallback (inserts after the letter)
+        square.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = 'move';
+        });
+
+        square.addEventListener('drop', (e) => {
+            e.preventDefault();
+            const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
+            const targetIndex = parseInt(e.target.dataset.index);
+
+            // Insert after the target letter
+            const toPosition = targetIndex + 1;
+            this.insertLetter(fromIndex, toPosition);
         });
     }
 
@@ -382,8 +403,25 @@ class BuchstabensalatGame {
         // Re-render letters
         this.renderLetters();
 
+        // Add drop feedback animation to the moved letter
+        this.showDropFeedback(insertPosition);
+
         // Check win condition
         this.checkWinCondition();
+    }
+
+    showDropFeedback(index) {
+        // Wait for render to complete
+        setTimeout(() => {
+            const letters = this.letterContainer.querySelectorAll('.letter-square');
+            if (letters[index]) {
+                letters[index].classList.add('just-dropped');
+                // Remove class after animation completes
+                setTimeout(() => {
+                    letters[index].classList.remove('just-dropped');
+                }, 400);
+            }
+        }, 10);
     }
 
     checkWinCondition() {

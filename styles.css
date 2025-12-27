@@ -47,32 +47,28 @@ h1 {
 
 /* Letter Gaps (Drop Zones) */
 .letter-gap {
-    width: 20px;
-    min-width: 20px;
+    width: 25px;
+    min-width: 25px;
     height: 60px;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.2s ease;
     position: relative;
 }
 
 .letter-gap::before {
     content: '';
-    width: 3px;
+    width: 5px;
     height: 0;
     background-color: #4CAF50;
-    border-radius: 2px;
-    transition: height 0.2s ease;
-}
-
-.letter-gap.drag-over {
-    width: 30px;
+    border-radius: 3px;
+    transition: height 0.1s ease;
 }
 
 .letter-gap.drag-over::before {
-    height: 50px;
-    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+    height: 60px;
+    background-color: #66BB6A;
+    box-shadow: 0 0 15px rgba(76, 175, 80, 0.9), 0 0 25px rgba(76, 175, 80, 0.5);
 }
 
 /* Letter Squares */
@@ -113,6 +109,24 @@ h1 {
     pointer-events: none;
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
     transition: none;
+}
+
+/* Just Dropped State */
+.letter-square.just-dropped {
+    animation: dropFeedback 0.4s ease-out;
+}
+
+@keyframes dropFeedback {
+    0% {
+        transform: scale(1);
+    }
+    40% {
+        transform: scale(1.15);
+        box-shadow: 0 0 15px rgba(66, 165, 245, 0.6);
+    }
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Win State */
@@ -185,6 +199,15 @@ h1 {
     gap: 20px;
     justify-content: center;
     align-items: center;
+}
+
+/* Version Number */
+.version {
+    margin-top: 15px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #999;
+    opacity: 0.7;
 }
 
 /* Help Button */
@@ -393,17 +416,13 @@ h1 {
     }
 
     .letter-gap {
-        width: 15px;
-        min-width: 15px;
+        width: 20px;
+        min-width: 20px;
         height: 50px;
     }
 
-    .letter-gap.drag-over {
-        width: 25px;
-    }
-
     .letter-gap.drag-over::before {
-        height: 40px;
+        height: 50px;
     }
 
     h1 {
@@ -444,17 +463,13 @@ h1 {
     }
 
     .letter-gap {
-        width: 12px;
-        min-width: 12px;
+        width: 15px;
+        min-width: 15px;
         height: 45px;
     }
 
-    .letter-gap.drag-over {
-        width: 20px;
-    }
-
     .letter-gap.drag-over::before {
-        height: 35px;
+        height: 45px;
     }
 
     .btn-help,
