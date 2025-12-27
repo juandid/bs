@@ -1,0 +1,485 @@
+/* Reset and Base */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+                 'Helvetica Neue', Arial, sans-serif;
+    background-color: #f5f5f5;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Container */
+.container {
+    max-width: 600px;
+    width: 100%;
+    text-align: center;
+}
+
+/* Header */
+header {
+    margin-bottom: 30px;
+}
+
+h1 {
+    font-size: 2rem;
+    color: #333;
+    margin-bottom: 15px;
+}
+
+
+/* Letter Container */
+.letter-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+    min-height: 100px;
+}
+
+/* Letter Gaps (Drop Zones) */
+.letter-gap {
+    width: 20px;
+    min-width: 20px;
+    height: 60px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.2s ease;
+    position: relative;
+}
+
+.letter-gap::before {
+    content: '';
+    width: 3px;
+    height: 0;
+    background-color: #4CAF50;
+    border-radius: 2px;
+    transition: height 0.2s ease;
+}
+
+.letter-gap.drag-over {
+    width: 30px;
+}
+
+.letter-gap.drag-over::before {
+    height: 50px;
+    box-shadow: 0 0 8px rgba(76, 175, 80, 0.6);
+}
+
+/* Letter Squares */
+.letter-square {
+    width: 60px;
+    height: 60px;
+    background-color: white;
+    border: 2px solid black;
+    border-radius: 8px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: black;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    transition: all 0.2s ease;
+}
+
+/* Drag States */
+.letter-square:active {
+    cursor: grabbing;
+}
+
+.letter-square.dragging {
+    opacity: 0.3;
+    transform: scale(0.9);
+}
+
+/* Ghost element during touch drag */
+.ghost-drag {
+    pointer-events: none;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+    transition: none;
+}
+
+/* Win State */
+.letter-square.won {
+    background: #4CAF50;
+    color: white;
+    border-color: #2E7D32;
+    border-width: 3px;
+    cursor: default;
+    animation: winPulse 0.6s ease-in-out;
+    box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+}
+
+@keyframes winPulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.15);
+    }
+}
+
+/* Confetti Container */
+.confetti-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+/* Confetti Piece */
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    background-color: #f0f;
+    top: -10px;
+    opacity: 1;
+    animation: confettiFall linear forwards;
+}
+
+@keyframes confettiFall {
+    to {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+    }
+}
+
+/* Different confetti shapes */
+.confetti.square {
+    border-radius: 0;
+}
+
+.confetti.circle {
+    border-radius: 50%;
+}
+
+.confetti.rectangle {
+    width: 8px;
+    height: 15px;
+}
+
+/* Button Container */
+.button-container {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Help Button */
+.btn-help {
+    background-color: #42A5F5;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-help:hover {
+    background-color: #1E88E5;
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-help:active {
+    transform: scale(0.95);
+}
+
+/* Solution Button */
+.btn-solution {
+    background-color: #FFA726;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-solution:hover {
+    background-color: #FB8C00;
+    transform: scale(1.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-solution:active {
+    transform: scale(0.95);
+}
+
+/* Salad Bowl Button */
+.btn-salad {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-salad:hover {
+    background-color: #45a049;
+    transform: scale(1.1) rotate(15deg);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-salad:active {
+    transform: scale(0.95);
+}
+
+/* Help Overlay */
+.overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 10000;
+    justify-content: center;
+    align-items: center;
+    animation: fadeIn 0.3s ease;
+}
+
+.overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+.overlay-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 16px;
+    max-width: 500px;
+    width: 90%;
+    max-height: 85vh;
+    overflow-y: auto;
+    position: relative;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+}
+
+@keyframes slideIn {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+.overlay-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #666;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+}
+
+.overlay-close:hover {
+    background-color: #f0f0f0;
+    color: #333;
+}
+
+.overlay-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 1.8rem;
+}
+
+.overlay-content h3 {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    color: #444;
+    font-size: 1.3rem;
+}
+
+.help-section {
+    margin-bottom: 20px;
+    line-height: 1.6;
+}
+
+.help-section p {
+    margin: 8px 0;
+    color: #555;
+}
+
+.help-section ul {
+    margin: 10px 0;
+    padding-left: 20px;
+}
+
+.help-section li {
+    margin: 8px 0;
+    color: #555;
+}
+
+.install-section {
+    background-color: #f5f5f5;
+    padding: 15px;
+    border-radius: 8px;
+    margin-top: 25px;
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+    .letter-square {
+        width: 50px;
+        height: 50px;
+        font-size: 1.5rem;
+    }
+
+    .letter-gap {
+        width: 15px;
+        min-width: 15px;
+        height: 50px;
+    }
+
+    .letter-gap.drag-over {
+        width: 25px;
+    }
+
+    .letter-gap.drag-over::before {
+        height: 40px;
+    }
+
+    h1 {
+        font-size: 1.5rem;
+    }
+
+    .btn-help,
+    .btn-solution,
+    .btn-salad {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .button-container {
+        gap: 15px;
+    }
+
+    .overlay-content {
+        padding: 25px;
+        padding-top: 50px;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.5rem;
+    }
+
+    .overlay-content h3 {
+        font-size: 1.2rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .letter-square {
+        width: 45px;
+        height: 45px;
+        font-size: 1.3rem;
+    }
+
+    .letter-gap {
+        width: 12px;
+        min-width: 12px;
+        height: 45px;
+    }
+
+    .letter-gap.drag-over {
+        width: 20px;
+    }
+
+    .letter-gap.drag-over::before {
+        height: 35px;
+    }
+
+    .btn-help,
+    .btn-solution,
+    .btn-salad {
+        width: 55px;
+        height: 55px;
+        font-size: 1.8rem;
+    }
+
+    .button-container {
+        gap: 12px;
+    }
+
+    .overlay-content {
+        padding: 20px;
+        padding-top: 45px;
+        font-size: 0.95rem;
+    }
+
+    .overlay-content h2 {
+        font-size: 1.3rem;
+    }
+
+    .overlay-content h3 {
+        font-size: 1.1rem;
+    }
+}

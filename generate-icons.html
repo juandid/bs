@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Icon Generator - Buchstabensalat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        canvas {
+            border: 1px solid #ccc;
+            margin: 10px;
+        }
+        .instructions {
+            background: #f5f5f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+        .icon-section {
+            margin: 30px 0;
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #45a049;
+        }
+    </style>
+</head>
+<body>
+    <h1>Buchstabensalat - Icon Generator</h1>
+
+    <div class="instructions">
+        <h2>Anleitung:</h2>
+        <ol>
+            <li>Klicken Sie auf die "Download"-Buttons unten</li>
+            <li>Speichern Sie jedes Icon mit dem entsprechenden Namen im <code>/bs/icons/</code> Ordner</li>
+            <li>Die Icons werden automatisch generiert und können direkt heruntergeladen werden</li>
+        </ol>
+    </div>
+
+    <div class="icon-section">
+        <h3>32x32 Icon (Favicon)</h3>
+        <canvas id="icon32" width="32" height="32"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon32', 'icon-32x32.png')">Download icon-32x32.png</button>
+    </div>
+
+    <div class="icon-section">
+        <h3>192x192 Icon (Android)</h3>
+        <canvas id="icon192" width="192" height="192"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon192', 'icon-192x192.png')">Download icon-192x192.png</button>
+    </div>
+
+    <div class="icon-section">
+        <h3>512x512 Icon (Splash Screen)</h3>
+        <canvas id="icon512" width="512" height="512"></canvas>
+        <br>
+        <button onclick="downloadIcon('icon512', 'icon-512x512.png')">Download icon-512x512.png</button>
+    </div>
+
+    <script>
+        function createIcon(canvasId, size) {
+            const canvas = document.getElementById(canvasId);
+            const ctx = canvas.getContext('2d');
+
+            // Background
+            ctx.fillStyle = '#4CAF50';
+            ctx.fillRect(0, 0, size, size);
+
+            // Border
+            ctx.strokeStyle = '#2E7D32';
+            ctx.lineWidth = size * 0.05;
+            ctx.strokeRect(0, 0, size, size);
+
+            // Text "BS"
+            ctx.fillStyle = 'white';
+            ctx.font = `bold ${size * 0.4}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('BS', size / 2, size / 2);
+
+            // Small text below
+            ctx.font = `${size * 0.12}px Arial`;
+            ctx.fillText('Buchstabensalat', size / 2, size * 0.85);
+        }
+
+        function downloadIcon(canvasId, filename) {
+            const canvas = document.getElementById(canvasId);
+            const link = document.createElement('a');
+            link.download = filename;
+            link.href = canvas.toDataURL('image/png');
+            link.click();
+        }
+
+        // Generate all icons on page load
+        window.addEventListener('load', () => {
+            createIcon('icon32', 32);
+            createIcon('icon192', 192);
+            createIcon('icon512', 512);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Buchstabensalat - Ein Wortspiel zum Buchstaben sortieren">
+    <meta name="theme-color" content="#ffffff">
+
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" sizes="32x32" href="icons/icon-32x32.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="icons/icon-192x192.png">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Buchstabensalat">
+
+    <title>Buchstabensalat</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Buchstabensalat</h1>
+        </header>
+
+        <main>
+            <div id="letter-container" class="letter-container">
+                <!-- Letter squares dynamically inserted here -->
+            </div>
+        </main>
+
+        <footer>
+            <div class="button-container">
+                <button id="help-btn" class="btn-help" title="Hilfe anzeigen">
+                    ❓
+                </button>
+                <button id="solution-btn" class="btn-solution" title="Lösung anzeigen">
+                    💡
+                </button>
+                <button id="new-game-btn" class="btn-salad" title="Neues Wort">
+                    🥗
+                </button>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Help Overlay -->
+    <div id="help-overlay" class="overlay">
+        <div class="overlay-content">
+            <button class="overlay-close" id="close-help">✕</button>
+            <h2>Wie spielt man?</h2>
+            <div class="help-section">
+                <p><strong>Ziel des Spiels:</strong></p>
+                <p>Sortiere die durcheinandergebrachten Buchstaben, um ein deutsches Wort zu bilden.</p>
+            </div>
+            <div class="help-section">
+                <p><strong>So funktioniert's:</strong></p>
+                <ul>
+                    <li>📱 <strong>Auf dem Handy:</strong> Buchstaben antippen, in einen Zwischenraum ziehen und loslassen</li>
+                    <li>🖱️ <strong>Am Computer:</strong> Buchstaben mit der Maus in einen Zwischenraum ziehen und loslassen</li>
+                </ul>
+                <p>Die anderen Buchstaben rutschen automatisch zur Seite!</p>
+            </div>
+            <div class="help-section">
+                <p><strong>💡 Tipp:</strong> Brauchst du Hilfe? Klicke auf die Glühbirne, um die Lösung zu sehen.</p>
+            </div>
+            <div class="help-section install-section">
+                <h3>📲 Als App installieren</h3>
+                <p>Du kannst Buchstabensalat auf deinem Smartphone-Homescreen speichern:</p>
+                <ul>
+                    <li><strong>iPhone/iPad:</strong> Safari öffnen → "Teilen" → "Zum Home-Bildschirm"</li>
+                    <li><strong>Android:</strong> Chrome öffnen → Menü (⋮) → "Zum Startbildschirm hinzufügen"</li>
+                </ul>
+                <p>Dann kannst du das Spiel wie eine normale App starten!</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
