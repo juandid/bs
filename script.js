@@ -396,12 +396,14 @@ class BuchstabensalatGame {
         }
     }
 
-    handleWin() {
+    handleWin(showConfetti = true) {
         // Re-render to apply won class
         this.renderLetters();
 
-        // Trigger confetti animation
-        this.createConfetti();
+        // Trigger confetti animation only if player solved it themselves
+        if (showConfetti) {
+            this.createConfetti();
+        }
     }
 
     showSolution() {
@@ -416,8 +418,8 @@ class BuchstabensalatGame {
         // Mark as won
         this.gameState.isWon = true;
 
-        // Handle win (shows confetti and renders)
-        this.handleWin();
+        // Handle win (no confetti when solution is shown)
+        this.handleWin(false);
     }
 
     showHelp() {

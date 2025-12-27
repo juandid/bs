@@ -1,8 +1,1 @@
-- Doppelte Lösungen REDE und ERDE, SAUM und MAUS
-- Mehr Wörter in der Basis und eine History führen, damit die 50 letzten Wörter nicht gleich wieder kommen
 - Timer 2 Minuten: Wie viele schafft man?
-- Hilfe
-    - Drag and Drop bis das Wort gefunden
-    - Speichern als Homebutton
-    -
-    -
