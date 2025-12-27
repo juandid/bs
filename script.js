@@ -5,7 +5,8 @@ class BuchstabensalatGame {
             currentWord: '',
             letterPositions: [],
             isWon: false,
-            wordList: []
+            wordList: [],
+            wordHistory: []
         };
 
         this.letterContainer = document.getElementById('letter-container');
@@ -15,11 +16,15 @@ class BuchstabensalatGame {
         this.helpOverlay = document.getElementById('help-overlay');
         this.closeHelpBtn = document.getElementById('close-help');
 
+        this.HISTORY_SIZE = 50;
+        this.STORAGE_KEY = 'buchstabensalat_history';
+
         this.init();
     }
 
     async init() {
         await this.loadWords();
+        this.loadHistory();
         this.setupEventListeners();
         this.startNewGame();
     }
@@ -48,6 +53,45 @@ class BuchstabensalatGame {
         }
     }
 
+    loadHistory() {
+        try {
+            const stored = localStorage.getItem(this.STORAGE_KEY);
+            if (stored) {
+                this.gameState.wordHistory = JSON.parse(stored);
+                // Nur gültige Wörter behalten
+                this.gameState.wordHistory = this.gameState.wordHistory.filter(
+                    word => this.gameState.wordList.includes(word)
+                );
+            }
+        } catch (error) {
+            console.warn('Could not load word history:', error);
+            this.gameState.wordHistory = [];
+        }
+    }
+
+    saveHistory() {
+        try {
+            localStorage.setItem(
+                this.STORAGE_KEY,
+                JSON.stringify(this.gameState.wordHistory)
+            );
+        } catch (error) {
+            console.warn('Could not save word history:', error);
+        }
+    }
+
+    addToHistory(word) {
+        // Am Anfang einfügen (neueste zuerst)
+        this.gameState.wordHistory.unshift(word);
+
+        // Auf 50 Wörter begrenzen
+        if (this.gameState.wordHistory.length > this.HISTORY_SIZE) {
+            this.gameState.wordHistory = this.gameState.wordHistory.slice(0, this.HISTORY_SIZE);
+        }
+
+        this.saveHistory();
+    }
+
     setupEventListeners() {
         this.newGameBtn.addEventListener('click', () => this.startNewGame());
         this.solutionBtn.addEventListener('click', () => this.showSolution());
@@ -70,9 +114,25 @@ class BuchstabensalatGame {
     }
 
     startNewGame() {
-        // Select random word
-        const randomIndex = Math.floor(Math.random() * this.gameState.wordList.length);
-        this.gameState.currentWord = this.gameState.wordList[randomIndex];
+        // Verfügbare Wörter = alle minus Historie
+        let availableWords = this.gameState.wordList.filter(
+            word => !this.gameState.wordHistory.includes(word)
+        );
+
+        // Fallback: Wenn < 10 Wörter verfügbar, Historie zurücksetzen
+        if (availableWords.length < 10) {
+            console.log('Resetting word history - too few words available');
+            this.gameState.wordHistory = [];
+            this.saveHistory();
+            availableWords = this.gameState.wordList;
+        }
+
+        // Wähle zufälliges Wort aus verfügbaren
+        const randomIndex = Math.floor(Math.random() * availableWords.length);
+        this.gameState.currentWord = availableWords[randomIndex];
+
+        // Füge zur Historie hinzu
+        this.addToHistory(this.gameState.currentWord);
 
         // Scramble the word
         this.gameState.letterPositions = this.scrambleWord(this.gameState.currentWord);
@@ -99,6 +159,13 @@ class BuchstabensalatGame {
         } while (scrambled.join('') === word);
 
         return scrambled;
+    }
+
+    findValidAnagrams(letters) {
+        const sortedLetters = letters.split('').sort().join('');
+        return this.gameState.wordList.filter(word => {
+            return word.split('').sort().join('') === sortedLetters;
+        });
     }
 
     renderLetters() {
@@ -321,8 +388,9 @@ class BuchstabensalatGame {
 
     checkWinCondition() {
         const currentArrangement = this.gameState.letterPositions.join('');
+        const validSolutions = this.findValidAnagrams(this.gameState.currentWord);
 
-        if (currentArrangement === this.gameState.currentWord) {
+        if (validSolutions.includes(currentArrangement)) {
             this.gameState.isWon = true;
             this.handleWin();
         }
