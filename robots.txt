@@ -1,0 +1,15 @@
+# robots.txt für Buchstabensalat PWA
+
+# Alle Crawler erlauben
+User-agent: *
+Allow: /
+
+# Technische Dateien ausschließen
+Disallow: /sw.js
+Disallow: /manifest.json
+
+#Wortliste vor Crawling schützen
+Disallow: /words.txt
+
+# Sitemap
+Sitemap: https://bs.juandid.com/sitemap.xml
