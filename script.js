@@ -114,6 +114,9 @@ class BuchstabensalatGame {
     }
 
     startNewGame() {
+        // Stoppe sofort alle laufenden Konfetti-Animationen
+        this.stopConfetti();
+
         // Verfügbare Wörter = alle minus Historie
         let availableWords = this.gameState.wordList.filter(
             word => !this.gameState.wordHistory.includes(word)
@@ -470,6 +473,12 @@ class BuchstabensalatGame {
         this.helpOverlay.classList.remove('active');
         // Restore body scroll
         document.body.style.overflow = '';
+    }
+
+    stopConfetti() {
+        // Entferne alle existierenden Konfetti-Container sofort
+        const confettiContainers = document.querySelectorAll('.confetti-container');
+        confettiContainers.forEach(container => container.remove());
     }
 
     createConfetti() {
