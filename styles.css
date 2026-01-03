@@ -23,8 +23,8 @@ body {
     text-align: center;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    min-height: calc(100vh - 40px); /* Full viewport height minus body padding */
+    height: auto;
+    min-height: auto;
 }
 
 /* Header */
@@ -40,20 +40,25 @@ h1 {
 
 main {
     flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
 }
 
 /* Challenge Controls */
 .challenge-controls {
-    display: none; /* Hidden by default */
+    visibility: hidden; /* Hidden but occupies space */
+    display: flex;
     justify-content: center;
     align-items: center;
     gap: 15px;
     margin-top: 20px;
     padding: 10px 0;
+    height: 50px; /* Explicit height to prevent collapse */
 }
 
 .challenge-controls.visible {
-    display: flex; /* Made visible via JS */
+    visibility: visible; /* Made visible via JS */
 }
 
 /* Challenge Button */
