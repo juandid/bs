@@ -24,7 +24,8 @@ class BuchstabensalatGame {
         this.closeHelpBtn = document.getElementById('close-help');
 
         // Challenge mode references
-        this.modeToggle = document.getElementById('mode-toggle');
+        this.toggleChallengeBtn = document.getElementById('toggle-challenge-btn');
+        this.challengeControls = document.getElementById('challenge-controls');
         this.challengeBtn = document.getElementById('challenge-btn');
         this.challengeStats = document.querySelector('.challenge-stats');
         this.timerDisplay = document.getElementById('timer-display');
@@ -131,7 +132,7 @@ class BuchstabensalatGame {
         });
 
         // Challenge mode event listeners
-        this.modeToggle.addEventListener('change', () => this.handleModeToggle());
+        this.toggleChallengeBtn.addEventListener('click', () => this.handleChallengeToggle());
         this.challengeBtn.addEventListener('click', () => this.handleChallengeButton());
         this.closeEndBtn.addEventListener('click', () => this.closeEndScreen());
         this.restartChallengeBtn.addEventListener('click', () => this.restartChallenge());
@@ -598,20 +599,23 @@ class BuchstabensalatGame {
 
     // ========== Challenge Mode Methods ==========
 
-    handleModeToggle() {
-        const wasActive = this.gameState.challengeActive;
+    handleChallengeToggle() {
+        // Toggle challenge mode state
+        this.gameState.challengeMode = !this.gameState.challengeMode;
 
-        this.gameState.challengeMode = this.modeToggle.checked;
+        // Update button and UI visibility
+        this.toggleChallengeBtn.classList.toggle('active', this.gameState.challengeMode);
+        this.challengeControls.classList.toggle('visible', this.gameState.challengeMode);
+        this.challengeBtn.classList.toggle('visible', this.gameState.challengeMode);
+        this.challengeStats.classList.toggle('visible', this.gameState.challengeMode);
 
-        // If switching modes during active challenge, abort it
-        if (wasActive) {
+
+        // If turning challenge mode OFF while a challenge is active, stop it
+        if (!this.gameState.challengeMode && this.gameState.challengeActive) {
             this.stopChallenge();
         }
-
-        // Update UI - show/hide challenge elements
-        this.updateChallengeUI();
-
-        // If switching off challenge mode, reset display
+        
+        // If turning challenge mode OFF, reset the display
         if (!this.gameState.challengeMode) {
             this.resetChallengeDisplay();
         }
@@ -716,17 +720,6 @@ class BuchstabensalatGame {
         this.updateTimerDisplay();
         this.updateSuccessCounter();
         this.timerDisplay.classList.remove('warning');
-    }
-
-    updateChallengeUI() {
-        // Show/hide challenge UI elements based on mode
-        if (this.gameState.challengeMode) {
-            this.challengeBtn.classList.add('visible');
-            this.challengeStats.classList.add('visible');
-        } else {
-            this.challengeBtn.classList.remove('visible');
-            this.challengeStats.classList.remove('visible');
-        }
     }
 
     endChallenge() {

@@ -23,29 +23,21 @@
             <h1>Buchstabensalat</h1>
         </header>
 
-        <!-- Challenge Mode Controls -->
-        <div id="challenge-controls" class="challenge-controls">
-            <div class="control-group">
-                <label class="toggle-label">
-                    <input type="checkbox" id="mode-toggle" class="mode-toggle-input">
-                    <span class="toggle-switch"></span>
-                    <span class="toggle-text">Challenge</span>
-                </label>
-            </div>
-
-            <button id="challenge-btn" class="btn-challenge" title="Challenge starten">
-                ▶️
-            </button>
-
-            <div class="challenge-stats">
-                <div class="timer-display" id="timer-display">2:00</div>
-                <div class="success-counter" id="success-counter">0</div>
-            </div>
-        </div>
-
         <main>
             <div id="letter-container" class="letter-container">
                 <!-- Letter squares dynamically inserted here -->
+            </div>
+
+            <!-- Challenge Mode Controls -->
+            <div id="challenge-controls" class="challenge-controls">
+                <button id="challenge-btn" class="btn-challenge" title="Challenge starten">
+                    ▶️
+                </button>
+
+                <div class="challenge-stats">
+                    <div class="timer-display" id="timer-display">2:00</div>
+                    <div class="success-counter" id="success-counter">0</div>
+                </div>
             </div>
         </main>
 
@@ -60,8 +52,11 @@
                 <button id="new-game-btn" class="btn-salad" title="Neues Wort">
                     🥗
                 </button>
+                <button id="toggle-challenge-btn" class="btn-challenge-toggle" title="Challenge Modus">
+                    ⏱️
+                </button>
             </div>
-            <div class="version">v1.4.0</div>
+            <div class="version">v1.5.0</div>
         </footer>
     </div>
 

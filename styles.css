@@ -21,6 +21,10 @@ body {
     max-width: 600px;
     width: 100%;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: calc(100vh - 40px); /* Full viewport height minus body padding */
 }
 
 /* Header */
@@ -34,71 +38,22 @@ h1 {
     margin-bottom: 15px;
 }
 
+main {
+    flex-grow: 1;
+}
+
 /* Challenge Controls */
 .challenge-controls {
-    display: flex;
-    justify-content: space-between;
+    display: none; /* Hidden by default */
+    justify-content: center;
     align-items: center;
     gap: 15px;
-    margin-bottom: 25px;
-    padding: 15px 20px;
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    margin-top: 20px;
+    padding: 10px 0;
 }
 
-.control-group {
-    flex: 1;
-    display: flex;
-    justify-content: flex-start;
-}
-
-/* Toggle Switch */
-.toggle-label {
-    display: flex;
-    align-items: center;
-    cursor: pointer;
-    gap: 10px;
-}
-
-.mode-toggle-input {
-    display: none;
-}
-
-.toggle-switch {
-    position: relative;
-    width: 60px;
-    height: 30px;
-    background-color: #ccc;
-    border-radius: 15px;
-    transition: background-color 0.3s ease;
-}
-
-.toggle-switch::before {
-    content: '';
-    position: absolute;
-    width: 26px;
-    height: 26px;
-    border-radius: 50%;
-    background-color: white;
-    top: 2px;
-    left: 2px;
-    transition: transform 0.3s ease;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
-}
-
-.mode-toggle-input:checked + .toggle-switch {
-    background-color: #FF6B6B;
-}
-
-.mode-toggle-input:checked + .toggle-switch::before {
-    transform: translateX(30px);
-}
-
-.toggle-text {
-    font-weight: 600;
-    color: #333;
-    font-size: 0.95rem;
+.challenge-controls.visible {
+    display: flex; /* Made visible via JS */
 }
 
 /* Challenge Button */
@@ -148,9 +103,8 @@ h1 {
 
 /* Challenge Stats */
 .challenge-stats {
-    flex: 1;
     display: none;
-    justify-content: flex-end;
+    justify-content: center; /* Centered now */
     gap: 15px;
     align-items: center;
 }
@@ -365,6 +319,33 @@ h1 {
     gap: 20px;
     justify-content: center;
     align-items: center;
+}
+
+/* New Challenge Toggle Button */
+.btn-challenge-toggle {
+    background-color: #e0e0e0;
+    color: #333;
+    border: none;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-challenge-toggle:hover {
+    background-color: #d5d5d5;
+    transform: scale(1.1);
+}
+
+.btn-challenge-toggle.active {
+    background-color: #FF6B6B;
+    color: white;
 }
 
 /* Version Number */
