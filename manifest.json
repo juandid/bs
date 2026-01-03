@@ -1,6 +1,7 @@
 {
   "name": "Buchstabensalat",
   "short_name": "Buchstabensalat",
+  "version": "1.4.0",
   "description": "Ein Wortspiel zum Sortieren von Buchstaben",
   "start_url": ".",
   "display": "standalone",

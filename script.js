@@ -6,7 +6,14 @@ class BuchstabensalatGame {
             letterPositions: [],
             isWon: false,
             wordList: [],
-            wordHistory: []
+            wordHistory: [],
+            // Challenge Mode
+            challengeMode: false,
+            challengeActive: false,
+            challengeTimeRemaining: 120,
+            challengeSuccessCount: 0,
+            challengeTimerId: null,
+            challengeWordHistory: []
         };
 
         this.letterContainer = document.getElementById('letter-container');
@@ -15,6 +22,17 @@ class BuchstabensalatGame {
         this.helpBtn = document.getElementById('help-btn');
         this.helpOverlay = document.getElementById('help-overlay');
         this.closeHelpBtn = document.getElementById('close-help');
+
+        // Challenge mode references
+        this.modeToggle = document.getElementById('mode-toggle');
+        this.challengeBtn = document.getElementById('challenge-btn');
+        this.challengeStats = document.querySelector('.challenge-stats');
+        this.timerDisplay = document.getElementById('timer-display');
+        this.successCounter = document.getElementById('success-counter');
+        this.endOverlay = document.getElementById('end-overlay');
+        this.closeEndBtn = document.getElementById('close-end');
+        this.restartChallengeBtn = document.getElementById('restart-challenge-btn');
+        this.endSuccessCount = document.getElementById('end-success-count');
 
         this.HISTORY_SIZE = 50;
         this.STORAGE_KEY = 'buchstabensalat_history';
@@ -111,22 +129,49 @@ class BuchstabensalatGame {
                 this.closeHelp();
             }
         });
+
+        // Challenge mode event listeners
+        this.modeToggle.addEventListener('change', () => this.handleModeToggle());
+        this.challengeBtn.addEventListener('click', () => this.handleChallengeButton());
+        this.closeEndBtn.addEventListener('click', () => this.closeEndScreen());
+        this.restartChallengeBtn.addEventListener('click', () => this.restartChallenge());
+
+        this.endOverlay.addEventListener('click', (e) => {
+            if (e.target === this.endOverlay) {
+                this.closeEndScreen();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.endOverlay.classList.contains('active')) {
+                this.closeEndScreen();
+            }
+        });
     }
 
     startNewGame() {
         // Stoppe sofort alle laufenden Konfetti-Animationen
         this.stopConfetti();
 
+        // Bestimme welche Historie verwendet wird
+        const wordHistory = this.gameState.challengeActive
+            ? this.gameState.challengeWordHistory
+            : this.gameState.wordHistory;
+
         // Verfügbare Wörter = alle minus Historie
         let availableWords = this.gameState.wordList.filter(
-            word => !this.gameState.wordHistory.includes(word)
+            word => !wordHistory.includes(word)
         );
 
         // Fallback: Wenn < 10 Wörter verfügbar, Historie zurücksetzen
         if (availableWords.length < 10) {
             console.log('Resetting word history - too few words available');
-            this.gameState.wordHistory = [];
-            this.saveHistory();
+            if (this.gameState.challengeActive) {
+                this.gameState.challengeWordHistory = [];
+            } else {
+                this.gameState.wordHistory = [];
+                this.saveHistory();
+            }
             availableWords = this.gameState.wordList;
         }
 
@@ -134,8 +179,15 @@ class BuchstabensalatGame {
         const randomIndex = Math.floor(Math.random() * availableWords.length);
         this.gameState.currentWord = availableWords[randomIndex];
 
-        // Füge zur Historie hinzu
-        this.addToHistory(this.gameState.currentWord);
+        // Zur richtigen Historie hinzufügen
+        if (this.gameState.challengeActive) {
+            this.gameState.challengeWordHistory.unshift(this.gameState.currentWord);
+            if (this.gameState.challengeWordHistory.length > this.HISTORY_SIZE) {
+                this.gameState.challengeWordHistory = this.gameState.challengeWordHistory.slice(0, this.HISTORY_SIZE);
+            }
+        } else {
+            this.addToHistory(this.gameState.currentWord);
+        }
 
         // Scramble the word
         this.gameState.letterPositions = this.scrambleWord(this.gameState.currentWord);
@@ -175,9 +227,12 @@ class BuchstabensalatGame {
         // Clear container
         this.letterContainer.innerHTML = '';
 
-        // Create gap before first letter
+        const totalLetters = this.gameState.letterPositions.length;
+
+        // Create gap before first letter (edge gap)
         if (!this.gameState.isWon) {
             const firstGap = this.createGap(0);
+            firstGap.classList.add('edge');
             this.letterContainer.appendChild(firstGap);
         }
 
@@ -188,7 +243,8 @@ class BuchstabensalatGame {
             square.textContent = letter;
             square.dataset.index = index;
 
-            if (!this.gameState.isWon) {
+            if (!this.gameState.isWon &&
+                !(this.gameState.challengeActive && this.gameState.challengeTimeRemaining <= 0)) {
                 square.setAttribute('draggable', 'true');
                 this.attachDragEvents(square);
                 this.attachTouchEvents(square);
@@ -201,6 +257,10 @@ class BuchstabensalatGame {
             // Add gap after each letter (except when won)
             if (!this.gameState.isWon) {
                 const gap = this.createGap(index + 1);
+                // Last gap is also an edge gap
+                if (index === totalLetters - 1) {
+                    gap.classList.add('edge');
+                }
                 this.letterContainer.appendChild(gap);
             }
         });
@@ -441,15 +501,26 @@ class BuchstabensalatGame {
         // Re-render to apply won class
         this.renderLetters();
 
-        // Trigger confetti animation only if player solved it themselves
-        if (showConfetti) {
-            this.createConfetti();
+        if (this.gameState.challengeActive) {
+            // Challenge-Modus: Counter erhöhen, kein Konfetti
+            this.gameState.challengeSuccessCount++;
+            this.updateSuccessCounter();
+        } else {
+            // Standard-Modus: Konfetti bei selbst gelöstem Rätsel
+            if (showConfetti) {
+                this.createConfetti();
+            }
         }
     }
 
     showSolution() {
         // Don't show solution if already won
         if (this.gameState.isWon) {
+            return;
+        }
+
+        // Während Challenge nicht erlaubt
+        if (this.gameState.challengeActive) {
             return;
         }
 
@@ -523,6 +594,181 @@ class BuchstabensalatGame {
         setTimeout(() => {
             confettiContainer.remove();
         }, 5000);
+    }
+
+    // ========== Challenge Mode Methods ==========
+
+    handleModeToggle() {
+        const wasActive = this.gameState.challengeActive;
+
+        this.gameState.challengeMode = this.modeToggle.checked;
+
+        // If switching modes during active challenge, abort it
+        if (wasActive) {
+            this.stopChallenge();
+        }
+
+        // Update UI - show/hide challenge elements
+        this.updateChallengeUI();
+
+        // If switching off challenge mode, reset display
+        if (!this.gameState.challengeMode) {
+            this.resetChallengeDisplay();
+        }
+    }
+
+    handleChallengeButton() {
+        if (this.gameState.challengeActive) {
+            // Reset button clicked during challenge
+            this.stopChallenge();
+            this.startChallenge();
+        } else {
+            // Start button clicked
+            this.startChallenge();
+        }
+    }
+
+    startChallenge() {
+        // Reset challenge state
+        this.gameState.challengeActive = true;
+        this.gameState.challengeTimeRemaining = 120;
+        this.gameState.challengeSuccessCount = 0;
+        this.gameState.challengeWordHistory = [];
+
+        // Update button to reset mode
+        this.challengeBtn.textContent = '🔄';
+        this.challengeBtn.classList.add('active');
+        this.challengeBtn.title = 'Challenge zurücksetzen';
+
+        // Disable solution button
+        this.solutionBtn.disabled = true;
+
+        // Start timer
+        this.startChallengeTimer();
+
+        // Update display
+        this.updateTimerDisplay();
+        this.updateSuccessCounter();
+
+        // Start first puzzle
+        this.startNewGame();
+    }
+
+    stopChallenge() {
+        this.gameState.challengeActive = false;
+
+        // Clear timer
+        if (this.gameState.challengeTimerId) {
+            clearInterval(this.gameState.challengeTimerId);
+            this.gameState.challengeTimerId = null;
+        }
+
+        // Reset button
+        this.challengeBtn.textContent = '▶️';
+        this.challengeBtn.classList.remove('active');
+        this.challengeBtn.title = 'Challenge starten';
+
+        // Re-enable solution button
+        this.solutionBtn.disabled = false;
+
+        // Remove timer warning class if present
+        this.timerDisplay.classList.remove('warning');
+
+        // Reset display
+        this.resetChallengeDisplay();
+    }
+
+    startChallengeTimer() {
+        // Clear any existing timer
+        if (this.gameState.challengeTimerId) {
+            clearInterval(this.gameState.challengeTimerId);
+        }
+
+        this.gameState.challengeTimerId = setInterval(() => {
+            this.gameState.challengeTimeRemaining--;
+            this.updateTimerDisplay();
+
+            // Warning at 30 seconds
+            if (this.gameState.challengeTimeRemaining === 30) {
+                this.timerDisplay.classList.add('warning');
+            }
+
+            // Time's up
+            if (this.gameState.challengeTimeRemaining <= 0) {
+                this.endChallenge();
+            }
+        }, 1000);
+    }
+
+    updateTimerDisplay() {
+        const minutes = Math.floor(this.gameState.challengeTimeRemaining / 60);
+        const seconds = this.gameState.challengeTimeRemaining % 60;
+        this.timerDisplay.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    }
+
+    updateSuccessCounter() {
+        this.successCounter.textContent = this.gameState.challengeSuccessCount;
+    }
+
+    resetChallengeDisplay() {
+        this.gameState.challengeTimeRemaining = 120;
+        this.gameState.challengeSuccessCount = 0;
+        this.updateTimerDisplay();
+        this.updateSuccessCounter();
+        this.timerDisplay.classList.remove('warning');
+    }
+
+    updateChallengeUI() {
+        // Show/hide challenge UI elements based on mode
+        if (this.gameState.challengeMode) {
+            this.challengeBtn.classList.add('visible');
+            this.challengeStats.classList.add('visible');
+        } else {
+            this.challengeBtn.classList.remove('visible');
+            this.challengeStats.classList.remove('visible');
+        }
+    }
+
+    endChallenge() {
+        // Stop the timer
+        if (this.gameState.challengeTimerId) {
+            clearInterval(this.gameState.challengeTimerId);
+            this.gameState.challengeTimerId = null;
+        }
+
+        // Freeze the game (disable dragging)
+        this.gameState.challengeActive = false;
+
+        // Re-render to remove draggable attributes
+        this.renderLetters();
+
+        // Show end screen
+        this.showEndScreen();
+    }
+
+    showEndScreen() {
+        // Update stats in overlay
+        this.endSuccessCount.textContent = this.gameState.challengeSuccessCount;
+
+        // Show overlay
+        this.endOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeEndScreen() {
+        this.endOverlay.classList.remove('active');
+        document.body.style.overflow = '';
+
+        // Reset challenge state
+        this.stopChallenge();
+    }
+
+    restartChallenge() {
+        this.closeEndScreen();
+        // Small delay for smoother UX
+        setTimeout(() => {
+            this.startChallenge();
+        }, 200);
     }
 }
 
