@@ -305,6 +305,6 @@ Bei Problemen oder Feedback: feedback.txt im Projektverzeichnis anlegen.
 
 ---
 
-**Letzte Aktualisierung:** 2025-12-27
-**Version:** 1.0.0
+**Letzte Aktualisierung:** 2026-01-04
+**Version:** 1.7.0
 **Entwickelt mit:** Claude Code (Anthropic)

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Anagramm-Test</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-result {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #4CAF50;
+        }
+        .test-result.fail {
+            border-left-color: #f44336;
+        }
+        h1 {
+            color: #333;
+        }
+        .anagram-group {
+            background: #e3f2fd;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Anagramm-Funktionalität Test</h1>
+    <div id="results"></div>
+
+    <script>
+        async function testAnagrams() {
+            const resultsDiv = document.getElementById('results');
+
+            // Wortliste laden
+            const response = await fetch('words.txt');
+            const text = await response.text();
+            const wordList = text
+                .split('\n')
+                .map(word => word.trim().toUpperCase())
+                .filter(word => word.length > 0);
+
+            resultsDiv.innerHTML += `<div class="test-result">✓ Wortliste geladen: ${wordList.length} Wörter</div>`;
+
+            // Funktion zum Finden von Anagrammen (wie im Spiel)
+            function findValidAnagrams(letters) {
+                const sortedLetters = letters.split('').sort().join('');
+                return wordList.filter(word => {
+                    return word.split('').sort().join('') === sortedLetters;
+                });
+            }
+
+            // Test-Fälle
+            const testCases = [
+                { word: 'WINTER', expectedAnagrams: ['WINTER', 'WIRTEN'] },
+                { word: 'LAMPE', expectedAnagrams: ['LAMPE', 'PALME', 'AMPEL'] },
+                { word: 'GANZE', expectedAnagrams: ['GANZE', 'ZANGE'] },
+                { word: 'NEBEL', expectedAnagrams: ['NEBEL', 'LEBEN'] },
+                { word: 'RÜBE', expectedAnagrams: ['RÜBE', 'ÜBER'] },
+                { word: 'SEIL', expectedAnagrams: ['SEIL', 'LIES'] },
+                { word: 'REGAL', expectedAnagrams: ['REGAL', 'LAGER'] },
+                { word: 'EIMER', expectedAnagrams: ['EIMER', 'REIME'] },
+                { word: 'STEIN', expectedAnagrams: ['STEIN', 'NIEST', 'EINST'] },
+                { word: 'GARTEN', expectedAnagrams: ['GARTEN', 'TRAGEN'] }
+            ];
+
+            let passedTests = 0;
+            let failedTests = 0;
+
+            testCases.forEach(test => {
+                const found = findValidAnagrams(test.word);
+                const foundSet = new Set(found);
+                const expectedSet = new Set(test.expectedAnagrams);
+
+                // Prüfe ob alle erwarteten Anagramme gefunden wurden
+                const allFound = test.expectedAnagrams.every(word => foundSet.has(word));
+                const noExtra = found.every(word => expectedSet.has(word));
+
+                if (allFound && noExtra) {
+                    resultsDiv.innerHTML += `
+                        <div class="test-result">
+                            ✓ <strong>${test.word}</strong>
+                            <div class="anagram-group">
+                                Gefunden: ${found.join(' ↔ ')}
+                            </div>
+                        </div>
+                    `;
+                    passedTests++;
+                } else {
+                    resultsDiv.innerHTML += `
+                        <div class="test-result fail">
+                            ✗ <strong>${test.word}</strong>
+                            <div class="anagram-group">
+                                Erwartet: ${test.expectedAnagrams.join(', ')}<br>
+                                Gefunden: ${found.join(', ')}
+                            </div>
+                        </div>
+                    `;
+                    failedTests++;
+                }
+            });
+
+            resultsDiv.innerHTML += `
+                <div class="test-result" style="border-left-color: ${failedTests === 0 ? '#4CAF50' : '#ff9800'}; margin-top: 20px;">
+                    <strong>Ergebnis:</strong> ${passedTests} von ${testCases.length} Tests bestanden
+                    ${failedTests > 0 ? `<br>⚠️ ${failedTests} Tests fehlgeschlagen` : '<br>🎉 Alle Tests bestanden!'}
+                </div>
+            `;
+        }
+
+        testAnagrams();
+    </script>
+</body>
+</html>
