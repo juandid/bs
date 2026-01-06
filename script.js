@@ -752,16 +752,16 @@ class BuchstabensalatGame {
         this.endOverlay.classList.remove('active');
         document.body.style.overflow = '';
 
-        // Reset challenge state
+        // Reset challenge state but don't restart
         this.stopChallenge();
+
+        // Start a new game in normal mode
+        this.startNewGame();
     }
 
     restartChallenge() {
+        // Just close the end screen (button now says "Schliessen")
         this.closeEndScreen();
-        // Small delay for smoother UX
-        setTimeout(() => {
-            this.startChallenge();
-        }, 200);
     }
 }
 

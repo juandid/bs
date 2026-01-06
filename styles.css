@@ -52,7 +52,7 @@ main {
     justify-content: center;
     align-items: center;
     gap: 15px;
-    margin-top: 20px;
+    margin: 30px 0; /* Adjusted for consistent spacing */
     padding: 10px 0;
     height: 50px; /* Explicit height to prevent collapse */
 }
@@ -159,9 +159,9 @@ main {
     display: flex;
     justify-content: center;
     align-items: center;
-    flex-wrap: wrap;
-    margin-bottom: 30px;
+    flex-wrap: nowrap;
     min-height: 100px;
+    white-space: nowrap;
 }
 
 /* Letter Gaps (Drop Zones) */
@@ -177,8 +177,8 @@ main {
 
 /* Edge gaps (first and last) are wider for better UX */
 .letter-gap.edge {
-    width: 60px;
-    min-width: 60px;
+    width: 24px;
+    min-width: 24px;
 }
 
 .letter-gap::before {
@@ -263,6 +263,7 @@ main {
     cursor: default;
     animation: winPulse 0.6s ease-in-out;
     box-shadow: 0 0 20px rgba(76, 175, 80, 0.6);
+    margin: 0 3px;
 }
 
 @keyframes winPulse {
@@ -332,9 +333,9 @@ main {
     color: #333;
     border: none;
     border-radius: 50%;
-    width: 60px;
-    height: 60px;
-    font-size: 2rem;
+    width: 70px;
+    height: 70px;
+    font-size: 2.5rem;
     cursor: pointer;
     transition: all 0.3s ease;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -452,6 +453,10 @@ main {
 
 .btn-salad:active {
     transform: scale(0.95);
+}
+
+footer {
+    margin-top: 30px;
 }
 
 /* Help Overlay */
@@ -636,6 +641,25 @@ main {
     transform: translateY(0);
 }
 
+/* Landscape Orientation - 50% smaller vertical spacing */
+@media (orientation: landscape) {
+    header {
+        margin-bottom: 15px;
+    }
+
+    .challenge-controls {
+        margin: 15px 0;
+    }
+
+    footer {
+        margin-top: 15px;
+    }
+
+    body {
+        padding: 10px;
+    }
+}
+
 /* Responsive Design */
 @media (max-width: 480px) {
     .letter-square {
@@ -651,8 +675,8 @@ main {
     }
 
     .letter-gap.edge {
-        width: 50px;
-        min-width: 50px;
+        width: 20px;
+        min-width: 20px;
     }
 
     .letter-gap.drag-over::before {
@@ -665,7 +689,8 @@ main {
 
     .btn-help,
     .btn-solution,
-    .btn-salad {
+    .btn-salad,
+    .btn-challenge-toggle {
         width: 60px;
         height: 60px;
         font-size: 2rem;
@@ -735,6 +760,7 @@ main {
     }
 }
 
+
 @media (max-width: 360px) {
     .letter-square {
         width: 45px;
@@ -749,8 +775,8 @@ main {
     }
 
     .letter-gap.edge {
-        width: 45px;
-        min-width: 45px;
+        width: 16px;
+        min-width: 16px;
     }
 
     .letter-gap.drag-over::before {
@@ -759,7 +785,8 @@ main {
 
     .btn-help,
     .btn-solution,
-    .btn-salad {
+    .btn-salad,
+    .btn-challenge-toggle {
         width: 55px;
         height: 55px;
         font-size: 1.8rem;
@@ -816,3 +843,4 @@ main {
         font-size: 1rem;
     }
 }
+
