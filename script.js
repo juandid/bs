@@ -325,6 +325,17 @@ class BuchstabensalatGame {
             // Add drag-over to element below if it's a gap
             if (elementBelow && elementBelow.classList.contains('letter-gap')) {
                 elementBelow.classList.add('drag-over');
+            } else if (elementBelow && elementBelow.classList.contains('letter-square')) {
+                // If over a letter, highlight the appropriate gap based on position
+                const rect = elementBelow.getBoundingClientRect();
+                const isLeftHalf = (touch.clientX - rect.left) < (rect.width / 2);
+                const targetIndex = parseInt(elementBelow.dataset.index);
+                const gapPosition = isLeftHalf ? targetIndex : targetIndex + 1;
+
+                const targetGap = document.querySelector(`.letter-gap[data-position="${gapPosition}"]`);
+                if (targetGap) {
+                    targetGap.classList.add('drag-over');
+                }
             }
         }, { passive: false });
 
@@ -353,9 +364,11 @@ class BuchstabensalatGame {
                     const toPosition = parseInt(elementBelow.dataset.position);
                     this.insertLetter(touchStartIndex, toPosition);
                 } else if (elementBelow && elementBelow.classList.contains('letter-square')) {
-                    // Dropped on letter - insert after that letter
+                    // Dropped on letter - determine position based on touch location
+                    const rect = elementBelow.getBoundingClientRect();
+                    const isLeftHalf = (touch.clientX - rect.left) < (rect.width / 2);
                     const targetIndex = parseInt(elementBelow.dataset.index);
-                    const toPosition = targetIndex + 1;
+                    const toPosition = isLeftHalf ? targetIndex : targetIndex + 1;
                     this.insertLetter(touchStartIndex, toPosition);
                 }
             }
@@ -402,10 +415,32 @@ class BuchstabensalatGame {
             });
         });
 
-        // Allow drop on letters as fallback (inserts after the letter)
+        // Allow drop on letters - determine position based on cursor location
         square.addEventListener('dragover', (e) => {
             e.preventDefault();
             e.dataTransfer.dropEffect = 'move';
+
+            // Highlight the appropriate gap based on cursor position
+            const rect = e.target.getBoundingClientRect();
+            const isLeftHalf = (e.clientX - rect.left) < (rect.width / 2);
+            const targetIndex = parseInt(e.target.dataset.index);
+            const gapPosition = isLeftHalf ? targetIndex : targetIndex + 1;
+
+            // Update gap highlighting
+            document.querySelectorAll('.letter-gap').forEach(gap => {
+                gap.classList.remove('drag-over');
+            });
+            const targetGap = document.querySelector(`.letter-gap[data-position="${gapPosition}"]`);
+            if (targetGap) {
+                targetGap.classList.add('drag-over');
+            }
+        });
+
+        square.addEventListener('dragleave', (e) => {
+            // Remove gap highlighting when leaving a letter
+            document.querySelectorAll('.letter-gap').forEach(gap => {
+                gap.classList.remove('drag-over');
+            });
         });
 
         square.addEventListener('drop', (e) => {
@@ -413,8 +448,11 @@ class BuchstabensalatGame {
             const fromIndex = parseInt(e.dataTransfer.getData('text/plain'));
             const targetIndex = parseInt(e.target.dataset.index);
 
-            // Insert after the target letter
-            const toPosition = targetIndex + 1;
+            // Determine insert position based on where on the letter the drop occurred
+            const rect = e.target.getBoundingClientRect();
+            const isLeftHalf = (e.clientX - rect.left) < (rect.width / 2);
+            const toPosition = isLeftHalf ? targetIndex : targetIndex + 1;
+
             this.insertLetter(fromIndex, toPosition);
         });
     }
