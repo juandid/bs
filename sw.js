@@ -1,4 +1,4 @@
-const CACHE_NAME = 'buchstabensalat-v19';
+const CACHE_NAME = 'buchstabensalat-v21';
 const urlsToCache = [
   '.',
   './index.html',
