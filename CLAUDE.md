@@ -50,13 +50,15 @@ bs/
 - Ghost-Element folgt dem Finger während des Ziehens
 - Funktioniert auf allen moderaten Geräten
 
-### 3. Drei Haupt-Buttons
+### 3. Fünf Haupt-Buttons
 
 | Button | Icon | Farbe | Funktion |
 |--------|------|-------|----------|
 | Hilfe | ❓ | Blau (#42A5F5) | Öffnet Hilfe-Overlay |
 | Lösung | 💡 | Orange (#FFA726) | Zeigt Lösung sofort |
 | Neues Spiel | 🥗 | Grün (#4CAF50) | Startet neues Wort |
+| Challenge | ⏱️ | Grau (#e0e0e0) | Challenge-Modus ein/aus |
+| Einstellungen | ⚙️ | Blaugrau (#78909C) | Öffnet Einstellungen |
 
 ### 4. Hilfe-Overlay
 - **Öffnen:** ❓-Button klicken
@@ -67,7 +69,16 @@ bs/
   - **PWA-Installation** (iPhone & Android Anleitung)
 - Verhindert Body-Scroll während Overlay offen ist
 
-### 5. Win-Condition & Confetti
+### 5. Einstellungen
+- **Öffnen:** ⚙️-Button klicken
+- **Schließen:** ✕-Button, außerhalb klicken, ESC-Taste
+- **Inhalt:**
+  - Minimale Buchstabenanzahl (4-9, Default: 5)
+  - Maximale Buchstabenanzahl (4-9, Default: 9)
+- Einstellungen werden in localStorage gespeichert
+- Min kann nicht größer als Max sein und umgekehrt
+
+### 6. Win-Condition & Confetti
 - Automatische Prüfung nach jedem Zug
 - Bei Erfolg: Grüne Buchstaben + Konfetti-Animation
 - 150 Konfetti-Partikel mit verschiedenen Formen und Farben
@@ -107,10 +118,16 @@ createConfetti()        // Konfetti-Effekt
 
 ```javascript
 this.gameState = {
-    currentWord: '',        // Das korrekte Wort (z.B. "HASE")
-    letterPositions: [],    // Aktuelle Buchstaben-Anordnung als Array
-    isWon: false,          // Spiel gewonnen?
-    wordList: []           // Alle geladenen Wörter aus words.txt
+    currentWord: '',         // Das korrekte Wort (z.B. "HASE")
+    letterPositions: [],     // Aktuelle Buchstaben-Anordnung als Array
+    isWon: false,            // Spiel gewonnen?
+    wordList: [],            // Alle geladenen Wörter aus words.txt
+    filteredWordList: []     // Nach Länge gefilterte Wörter
+}
+
+this.settings = {
+    minLetters: 5,           // Minimale Wortlänge (Default: 5)
+    maxLetters: 9            // Maximale Wortlänge (Default: 9)
 }
 ```
 
@@ -305,6 +322,6 @@ Bei Problemen oder Feedback: feedback.txt im Projektverzeichnis anlegen.
 
 ---
 
-**Letzte Aktualisierung:** 2026-01-06
-**Version:** 1.8.0
+**Letzte Aktualisierung:** 2026-01-30
+**Version:** 1.9.0
 **Entwickelt mit:** Claude Code (Anthropic)

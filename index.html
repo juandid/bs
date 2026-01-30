@@ -21,6 +21,7 @@
     <div class="container">
         <header>
             <h1>Buchstabensalat</h1>
+            <p class="subtitle">Nomen, Verben, Adjektive und Adverbien</p>
         </header>
 
         <main>
@@ -55,8 +56,11 @@
                 <button id="toggle-challenge-btn" class="btn-challenge-toggle" title="Challenge Modus">
                     ⏱️
                 </button>
+                <button id="settings-btn" class="btn-settings" title="Einstellungen">
+                    ⚙️
+                </button>
             </div>
-            <div class="version">v1.8.1</div>
+            <div class="version">v1.9.0</div>
         </footer>
     </div>
 
@@ -88,6 +92,34 @@
                     <li><strong>Android:</strong> Chrome öffnen → Menü (⋮) → "Zum Startbildschirm hinzufügen"</li>
                 </ul>
                 <p>Dann kannst du das Spiel wie eine normale App starten!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Overlay -->
+    <div id="settings-overlay" class="overlay">
+        <div class="overlay-content settings-content">
+            <button class="overlay-close" id="close-settings">✕</button>
+            <h2>Einstellungen</h2>
+            <div class="settings-section">
+                <h3>Wortlänge</h3>
+                <p>Bestimme die Anzahl der Buchstaben pro Wort.</p>
+                <div class="settings-row">
+                    <label for="min-letters">Minimum:</label>
+                    <div class="number-input-group">
+                        <button class="number-btn minus" data-target="min-letters">−</button>
+                        <input type="number" id="min-letters" min="4" max="9" value="5" readonly>
+                        <button class="number-btn plus" data-target="min-letters">+</button>
+                    </div>
+                </div>
+                <div class="settings-row">
+                    <label for="max-letters">Maximum:</label>
+                    <div class="number-input-group">
+                        <button class="number-btn minus" data-target="max-letters">−</button>
+                        <input type="number" id="max-letters" min="4" max="9" value="9" readonly>
+                        <button class="number-btn plus" data-target="max-letters">+</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

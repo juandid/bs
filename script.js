@@ -6,6 +6,7 @@ class BuchstabensalatGame {
             letterPositions: [],
             isWon: false,
             wordList: [],
+            filteredWordList: [],
             wordHistory: [],
             // Challenge Mode
             challengeMode: false,
@@ -15,6 +16,13 @@ class BuchstabensalatGame {
             challengeTimerId: null,
             challengeWordHistory: []
         };
+
+        // Settings
+        this.settings = {
+            minLetters: 5,
+            maxLetters: 9
+        };
+        this.SETTINGS_KEY = 'buchstabensalat_settings';
 
         this.letterContainer = document.getElementById('letter-container');
         this.newGameBtn = document.getElementById('new-game-btn');
@@ -35,6 +43,13 @@ class BuchstabensalatGame {
         this.restartChallengeBtn = document.getElementById('restart-challenge-btn');
         this.endSuccessCount = document.getElementById('end-success-count');
 
+        // Settings references
+        this.settingsBtn = document.getElementById('settings-btn');
+        this.settingsOverlay = document.getElementById('settings-overlay');
+        this.closeSettingsBtn = document.getElementById('close-settings');
+        this.minLettersInput = document.getElementById('min-letters');
+        this.maxLettersInput = document.getElementById('max-letters');
+
         this.HISTORY_SIZE = 50;
         this.STORAGE_KEY = 'buchstabensalat_history';
 
@@ -42,6 +57,7 @@ class BuchstabensalatGame {
     }
 
     async init() {
+        this.loadSettings();
         await this.loadWords();
         this.loadHistory();
         this.setupEventListeners();
@@ -70,6 +86,14 @@ class BuchstabensalatGame {
                 'MÖRDER', 'SCHLOSS', 'HALUNKE'
             ];
         }
+        this.applyWordFilter();
+    }
+
+    applyWordFilter() {
+        this.gameState.filteredWordList = this.gameState.wordList.filter(
+            word => word.length >= this.settings.minLetters &&
+                    word.length <= this.settings.maxLetters
+        );
     }
 
     loadHistory() {
@@ -148,6 +172,27 @@ class BuchstabensalatGame {
                 this.closeEndScreen();
             }
         });
+
+        // Settings event listeners
+        this.settingsBtn.addEventListener('click', () => this.showSettings());
+        this.closeSettingsBtn.addEventListener('click', () => this.closeSettings());
+
+        this.settingsOverlay.addEventListener('click', (e) => {
+            if (e.target === this.settingsOverlay) {
+                this.closeSettings();
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && this.settingsOverlay.classList.contains('active')) {
+                this.closeSettings();
+            }
+        });
+
+        // Number input buttons
+        document.querySelectorAll('.number-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => this.handleNumberButton(e));
+        });
     }
 
     startNewGame() {
@@ -159,8 +204,8 @@ class BuchstabensalatGame {
             ? this.gameState.challengeWordHistory
             : this.gameState.wordHistory;
 
-        // Verfügbare Wörter = alle minus Historie
-        let availableWords = this.gameState.wordList.filter(
+        // Verfügbare Wörter = gefilterte Liste minus Historie
+        let availableWords = this.gameState.filteredWordList.filter(
             word => !wordHistory.includes(word)
         );
 
@@ -173,7 +218,7 @@ class BuchstabensalatGame {
                 this.gameState.wordHistory = [];
                 this.saveHistory();
             }
-            availableWords = this.gameState.wordList;
+            availableWords = this.gameState.filteredWordList;
         }
 
         // Wähle zufälliges Wort aus verfügbaren
@@ -633,6 +678,91 @@ class BuchstabensalatGame {
         setTimeout(() => {
             confettiContainer.remove();
         }, 5000);
+    }
+
+    // ========== Settings Methods ==========
+
+    loadSettings() {
+        try {
+            const stored = localStorage.getItem(this.SETTINGS_KEY);
+            if (stored) {
+                const parsed = JSON.parse(stored);
+                this.settings.minLetters = parsed.minLetters ?? 5;
+                this.settings.maxLetters = parsed.maxLetters ?? 9;
+            }
+        } catch (error) {
+            console.warn('Could not load settings:', error);
+        }
+        this.updateSettingsUI();
+    }
+
+    saveSettings() {
+        try {
+            localStorage.setItem(this.SETTINGS_KEY, JSON.stringify(this.settings));
+        } catch (error) {
+            console.warn('Could not save settings:', error);
+        }
+    }
+
+    updateSettingsUI() {
+        if (this.minLettersInput) {
+            this.minLettersInput.value = this.settings.minLetters;
+        }
+        if (this.maxLettersInput) {
+            this.maxLettersInput.value = this.settings.maxLetters;
+        }
+        this.updateNumberButtonStates();
+    }
+
+    updateNumberButtonStates() {
+        const minInput = this.minLettersInput;
+        const maxInput = this.maxLettersInput;
+
+        // Min buttons
+        const minMinus = document.querySelector('.number-btn.minus[data-target="min-letters"]');
+        const minPlus = document.querySelector('.number-btn.plus[data-target="min-letters"]');
+        if (minMinus) minMinus.disabled = this.settings.minLetters <= 4;
+        if (minPlus) minPlus.disabled = this.settings.minLetters >= this.settings.maxLetters;
+
+        // Max buttons
+        const maxMinus = document.querySelector('.number-btn.minus[data-target="max-letters"]');
+        const maxPlus = document.querySelector('.number-btn.plus[data-target="max-letters"]');
+        if (maxMinus) maxMinus.disabled = this.settings.maxLetters <= this.settings.minLetters;
+        if (maxPlus) maxPlus.disabled = this.settings.maxLetters >= 9;
+    }
+
+    handleNumberButton(e) {
+        const btn = e.target;
+        const targetId = btn.dataset.target;
+        const isPlus = btn.classList.contains('plus');
+
+        if (targetId === 'min-letters') {
+            if (isPlus && this.settings.minLetters < this.settings.maxLetters) {
+                this.settings.minLetters++;
+            } else if (!isPlus && this.settings.minLetters > 4) {
+                this.settings.minLetters--;
+            }
+        } else if (targetId === 'max-letters') {
+            if (isPlus && this.settings.maxLetters < 9) {
+                this.settings.maxLetters++;
+            } else if (!isPlus && this.settings.maxLetters > this.settings.minLetters) {
+                this.settings.maxLetters--;
+            }
+        }
+
+        this.updateSettingsUI();
+        this.saveSettings();
+        this.applyWordFilter();
+    }
+
+    showSettings() {
+        this.settingsOverlay.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    closeSettings() {
+        this.settingsOverlay.classList.remove('active');
+        document.body.style.overflow = '';
     }
 
     // ========== Challenge Mode Methods ==========
