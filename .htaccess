@@ -1,0 +1,13 @@
+# Security headers
+<IfModule mod_headers.c>
+  Header always set Content-Security-Policy "default-src 'self'; img-src 'self' data:; frame-ancestors 'none'; base-uri 'self'; form-action 'none'; object-src 'none'"
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000"
+</IfModule>
+
+# Development files are not part of the app
+<FilesMatch "^(CLAUDE\.md|README\.md|feedback\.md|test-anagrams\.(html|js)|generate-icons\.html)$">
+  Require all denied
+</FilesMatch>

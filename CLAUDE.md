@@ -22,6 +22,7 @@ bs/
 ├── words.txt           # Wortliste (451 gebräuchliche deutsche Wörter)
 ├── manifest.json       # PWA-Manifest
 ├── sw.js               # Service Worker für Offline-Funktionalität
+├── .htaccess           # Security-Header (CSP etc.), sperrt Dev-Dateien
 ├── icons/              # App-Icons (verschiedene Größen)
 └── CLAUDE.md           # Diese Datei
 
